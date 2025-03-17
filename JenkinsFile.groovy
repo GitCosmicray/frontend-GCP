@@ -8,6 +8,7 @@ pipeline {
         IMAGE_NAME = 'test-react1'               
         SONAR_HOST_URL = 'http://localhost:9000' 
         SCANNER_HOME=tool 'sonar-scanner'
+        SONARQUBE_TOKEN = credentials('sonarqube-GCP-TOKEN')
     }
 
     stages {
@@ -30,15 +31,12 @@ pipeline {
             }
         }
 
-        stage('Run SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh '''
-                    sonar-scanner \
-                    -Dsonar.projectKey=my-app \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=$SONAR_HOST_URL
-                    '''
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh "sonar-scanner -Dsonar.projectKey=GCP-cloudrun-deploy -Dsonar.sources=. -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONARQUBE_TOKEN}"
+                    }
                 }
             }
         }
