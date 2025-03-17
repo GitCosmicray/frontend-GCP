@@ -7,7 +7,7 @@ pipeline {
         REPO_NAME = 'private-image-repo'         
         IMAGE_NAME = 'test-react1'               
         SONAR_HOST_URL = 'http://localhost:9000' 
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
         SONARQUBE_TOKEN = credentials('sonarqube-GCP-TOKEN')
     }
 
@@ -33,17 +33,17 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonarqube-GCP-TOKEN', variable: 'SONARQUBE_TOKEN')]) {
                     script {
                         def scannerHome = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                        withEnv(["PATH+SCANNER=${SCANNER_HOME}/bin"]) {
-                            sh """
-                                sonar-scanner \
-                                -Dsonar.projectKey=GCP-cloudrun-deploy \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=http://localhost:9000 \
-                                -Dsonar.login=${SONARQUBE_TOKEN}
-                            """
+                        withEnv(["PATH+SCANNER=${scannerHome}/bin"]) {
+                            sh '''
+                            sonar-scanner \
+                            -Dsonar.projectKey=GCP-cloudrun-deploy \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=$SONAR_HOST_URL \
+                            -Dsonar.login=$SONARQUBE_TOKEN
+                            '''
                         }
                     }
                 }
@@ -78,7 +78,7 @@ pipeline {
                         --image $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:latest \
                         --platform managed \
                         --region $REGION \
-                        --allow-unauthenticated
+                        --allow-unauthenticated \
                         --port=80
                     '''
                 }
