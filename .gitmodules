@@ -1,0 +1,3 @@
+[submodule "frontend-app-GCP"]
+	path = frontend-app-GCP
+	url = https://github.com/GitCosmicray/frontend-GCP.git
