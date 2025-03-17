@@ -32,7 +32,7 @@ pipeline {
 
         stage('Run SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('sonar-server') {
                     sh '''
                     sonar-scanner \
                     -Dsonar.projectKey=my-app \
